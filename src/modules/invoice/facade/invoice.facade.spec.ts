@@ -60,7 +60,7 @@ describe("Invoice Facade test", () => {
                 }
             ]
         }
-        const result = await facade.generate(input)
+        const result = await facade.create(input)
 
         expect(result).toBeDefined();
         expect(result.id).toBeDefined();
@@ -109,7 +109,7 @@ describe("Invoice Facade test", () => {
                 }
             ]
         }
-        const generate = await facade.generate(input)
+        const generate = await facade.create(input)
         const result = await facade.find(generate.id)
 
         expect(result).toBeDefined();

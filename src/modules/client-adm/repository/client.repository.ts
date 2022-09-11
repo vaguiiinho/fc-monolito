@@ -1,4 +1,5 @@
 import Id from "../../@shared/domain/value-object/id.value-object";
+import Address from "../../invoice/domain/address.vo";
 import Client from "../domain/client.entity";
 import ClientGateway from "../gateway/client.gateway";
 import { ClientModel } from "./client.model";
@@ -9,9 +10,15 @@ export default class ClientRepository implements ClientGateway {
             id: client.id.id,
             name: client.name,
             email: client.email,
-            address: client.address,
-            createdAt: client.createdAt,
-            updatedAt: client.updatedAt,
+            document: client.document,
+            street: client.address.street,
+            number: client.address.number,
+            complement: client.address.complement,
+            city: client.address.city,
+            state: client.address.state,
+            zipCode: client.address.zipCode,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         });
     }
     async find(id: string): Promise<Client> {
@@ -27,9 +34,15 @@ export default class ClientRepository implements ClientGateway {
             id: new Id(client.id),
             name: client.name,
             email: client.email,
-            address: client.address,
-            createdAt: client.createdAt,
-            updatedAt: client.updatedAt,
+            document: client.document,
+            address: new Address({
+                street: client.street,
+                number: client.number,
+                complement: client.complement,
+                city: client.city,
+                state: client.state,
+                zipCode: client.zipCode,
+            }),
         });
     }
 }
