@@ -20,8 +20,11 @@ export default class OrderModel extends Model {
     client: ClientModel;
 
     @HasMany(() => ProductModel)
-    priducts: ProductModel[];
+    products: ProductModel[];
 
     @Column({ allowNull: false })
     status: string;
+
+    @Column({ allowNull: false })
+    total: number;
 }

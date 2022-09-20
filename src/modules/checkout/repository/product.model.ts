@@ -22,7 +22,7 @@ export default class ProductModel extends Model {
 
     @ForeignKey(() => OrderModel)
     @Column({ allowNull: false })
-    client_id: string
+    productId: string
 
     @BelongsTo(() => OrderModel)
     client: OrderModel;
