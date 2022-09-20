@@ -2,14 +2,18 @@ import { Sequelize } from "sequelize-typescript";
 import Id from "../../@shared/domain/value-object/id.value-object";
 import ClientAdmFacadeFactory from "../../client-adm/factory/facade.factory";
 import InvoiceFacadeFactory from "../../invoice/factory/invoice.facade.factory";
+import InvoiceModel from "../../invoice/repository/invoice.model";
 import PaymentFacadeFactory from "../../payment/factory/payment.facade.factory";
 import ProductAdmFacadeFactory from "../../product-adm/factory/facade.factory";
 import StoreCatalogFacadeFactory from "../../store-adm/factory/facade.factory";
+import Client from "../domain/client.entity";
+import Order from "../domain/order.entity";
 import Product from "../domain/product.entity";
 import CheckoutRepository from "../repository/checkout.repository";
 import ClientModel from "../repository/client.model";
 import OrderModel from "../repository/order.model";
 import ProductModel from "../repository/product.model";
+import FindOrderUseCase from "../usecase/find-order/find-order.usecase";
 import PlaceOrderUseCase from "../usecase/place-order/place-order.usecase";
 import CheckoutFacade from "./checkout.facade";
 
@@ -27,7 +31,7 @@ describe("Checkout Facade test", () => {
         await sequelize.addModels([
             OrderModel,
             ProductModel,
-            ClientModel
+            ClientModel,
         ]);
         await sequelize.sync();
     });
@@ -122,14 +126,87 @@ describe("Checkout Facade test", () => {
         }
 
         const result = await checkoutFacade.placeOrder(input)
-            expect(result).toBeDefined();
-            expect(result.id).toBeDefined();
-            expect(result.invoiceId).toBe("1i")
-            expect(result.products).toStrictEqual([
-                { productId: "1" },
-                { productId: "2" },
-            ]);
+        expect(result).toBeDefined();
+        expect(result.id).toBeDefined();
+        expect(result.invoiceId).toBe("1i")
+        expect(result.products).toStrictEqual([
+            { productId: "1" },
+            { productId: "2" },
+        ]);
     })
+    it("should find an order", async () => {
 
-    
+        const repository = new CheckoutRepository()
+
+
+        const invoice = {
+            id: "1i",
+            name: "invoice 1",
+            document: "document 1",
+            street: "Rua Teste",
+            number: "123",
+            complement: "complemento",
+            city: "Teste",
+            state: "Teste",
+            zipCode: "12345678",
+            items: [
+                {
+                    id: "1",
+                    name: "product 1",
+                    price: 100
+                },
+                {
+                    id: "2",
+                    name: "product 2",
+                    price: 200
+                }
+            ]
+        }
+        const mockInvoiceFacade = {
+            create: jest.fn(),
+            find: jest.fn().mockResolvedValue(invoice),
+        };
+
+        const usecase = new FindOrderUseCase(repository, mockInvoiceFacade)
+
+        const checkoutFacade = new CheckoutFacade({
+            placeOrderUseCase: undefined,
+            findOrderUseCase: usecase
+        })
+
+        const order = new Order({
+            id: new Id("1"),
+            client: new Client({
+                id: new Id("1"),
+                name: "Client 0",
+                email: "client@user.com",
+                address: "some address",
+            }),
+            products: [
+                new Product({
+                    id: new Id("1"),
+                    name: "Product 1",
+                    description: "some description",
+                    salesPrice: 40,
+                }),
+                new Product({
+                    id: new Id("2"),
+                    name: `Product 2`,
+                    description: "some description",
+                    salesPrice: 30,
+                }),
+            ],
+            status: "approved"
+        })
+
+        await repository.addOrder(order)
+
+        const input = {
+            id: "1",
+            invoiceId: invoice.id,
+
+        }
+
+        const result = await checkoutFacade.findOrder(input)
+    })
 })
