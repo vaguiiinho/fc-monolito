@@ -81,7 +81,7 @@ describe("Checkout Facade test", () => {
             transactionId: "1t",
             orderId: "1o",
             amount: 100,
-            status: "error",
+            status: "approved",
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -122,11 +122,14 @@ describe("Checkout Facade test", () => {
         }
 
         const result = await checkoutFacade.placeOrder(input)
-        //     expect(result).toBeDefined();
-        //     expect(result.id).toBeDefined();
-        //     expect(result.products).toStrictEqual([
-        //         { productId: "1" },
-        //         { productId: "2" },
-        //     ]);
+            expect(result).toBeDefined();
+            expect(result.id).toBeDefined();
+            expect(result.invoiceId).toBe("1i")
+            expect(result.products).toStrictEqual([
+                { productId: "1" },
+                { productId: "2" },
+            ]);
     })
+
+    
 })
