@@ -15,7 +15,7 @@ describe("generate invoice usecase unit test", () => {
         const invoiceRepository = MonckRepositury()
         const invoiceUsecase = new GenerateInvoiceUsecase(invoiceRepository)
         const input = {
-            id: new Id("1"),
+            id: "1",
             name: "invoice 1",
             document: "document 1",
             street: "Rua Teste",
