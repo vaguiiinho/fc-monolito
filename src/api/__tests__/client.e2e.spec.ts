@@ -1,8 +1,12 @@
 import { app, sequelize } from "../express";
 import request from "supertest";
+import { ClientModel } from "../../modules/client-adm/repository/client.model";
 
 describe("E2E test for client", () => {
     beforeEach(async () => {
+        await sequelize.addModels([
+            ClientModel,
+        ]);
         await sequelize.sync({ force: true });
     });
 

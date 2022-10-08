@@ -1,9 +1,15 @@
 import { app, sequelize } from "../express";
 import request from "supertest";
+import ClientAdmFacadeFactory from "../../modules/client-adm/factory/facade.factory";
+import { ClientModel } from "../../modules/client-adm/repository/client.model";
+import ProductAdmFacadeFactory from "../../modules/product-adm/factory/facade.factory";
+import { ProductModel } from "../../modules/product-adm/repository/product.model";
+
 describe("E2E test for checkout", () => {
     beforeEach(async () => {
         await sequelize.addModels([
-
+            ClientModel,
+            ProductModel
         ]);
         await sequelize.sync({ force: true });
     });
@@ -14,37 +20,33 @@ describe("E2E test for checkout", () => {
 
     it("should a place order ", async () => {
 
-        const responseClient = await request(app)
-            .post("/client")
-            .send({
-                id: "1c",
-                name: "Client 1",
-                email: "x@x.com",
-                document: "123456789",
-                street: "Address 1",
-                number: "1",
-                complement: "Complement 1",
-                city: "City 1",
-                state: "State 1",
-                zipCode: "ZipCode 1",
-            });
+        const clientFacade = ClientAdmFacadeFactory.create()
+        const productFacade = ProductAdmFacadeFactory.create()
 
-        expect(responseClient.status).toBe(200);
-        expect(responseClient.body.id).toBe("1c");
+        const client = {
+            id: "1c",
+            name: "Client 1",
+            email: "x@x.com",
+            document: "123456789",
+            street: "Address 1",
+            number: "1",
+            complement: "Complement 1",
+            city: "City 1",
+            state: "State 1",
+            zipCode: "ZipCode 1",
+        };
 
-        // const responseProduct = await request(app)
-        //     .post("/product")
-        //     .send({
-        //         id: "1",
-        //         name: "product 1",
-        //         description: "product 1 description",
-        //         purchasePrice: 100,
-        //         stock: 10,
-        //     });
+        await clientFacade.add(client)
 
-        // expect(responseProduct.status).toBe(200);
-        // expect(responseProduct.body.id).toBe("1");
+        const product = {
+            id: "1",
+            name: "Product 1",
+            description: "Product 1 description",
+            purchasePrice: 100,
+            stock: 10,
+        };
 
+        await productFacade.addProduct(product);
 
         const response = await request(app)
             .post("/checkout")

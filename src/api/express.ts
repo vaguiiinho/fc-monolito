@@ -16,20 +16,15 @@ app.use("/client", clientRoute);
 app.use("/invoice", invoiceRoute);
 app.use("/checkout", checkoutRoute)
 
-export let sequelize: Sequelize;
 
+export let sequelize: Sequelize;
 async function setupDb() {
     sequelize = new Sequelize({
         dialect: "sqlite",
         storage: ":memory:",
         logging: false,
     });
-    await sequelize.addModels([
-        ClientModel,
-        InvoiceModel,
-        InvoiceItemModel,
-        ProductModel
-    ]);
+
     await sequelize.sync();
 }
 setupDb();

@@ -35,7 +35,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
         this._paymentFacade = paymentFacade;
     }
 
-    async execute(input: PlaceOrderInputDto): Promise<any> {
+    async execute(input: PlaceOrderInputDto): Promise<PlaceOrderOutputDto> {
 
         const client = await this._clientFacade.find({ id: input.clientId });
         if (!client) {
@@ -44,73 +44,68 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
 
         await this.validateProducts(input);
 
-        // const products = await Promise.all(
-        //     input.products.map((p) => this.getProduct(p.productId))
-        // );
+        const products = await Promise.all(
+            input.products.map((p) => this.getProduct(p.productId))
+        );
 
-        // const myClient = new Client({
-        //     id: new Id(client.id),
-        //     name: client.name,
-        //     email: client.email,
-        //     address: client.street,
-        // });
+        const myClient = new Client({
+            id: new Id(client.id),
+            name: client.name,
+            email: client.email,
+            address: client.street,
+        });
 
-        // const order = new Order({
-        //     client: myClient,
-        //     products,
-        // });
+        const order = new Order({
+            client: myClient,
+            products,
+        });
 
-        // const payment = await this._paymentFacade.process({
-        //     orderId: order.id.id,
-        //     amount: order.total,
-        // });
+        const payment = await this._paymentFacade.process({
+            orderId: order.id.id,
+            amount: order.total,
+        });
 
-        // const invoice =
-        //     payment.status === "approved"
-        //         ? await this._invoiceFacade.create({
-        //             name: client.name,
-        //             document: client.document,
-        //             street: client.street,
-        //             complement: client.complement,
-        //             number: client.number,
-        //             city: client.city,
-        //             state: client.state,
-        //             zipCode: client.zipCode,
-        //             items: products.map((p) => {
-        //                 return {
-        //                     id: p.id.id,
-        //                     name: p.name,
-        //                     price: p.salesPrice,
-        //                 };
-        //             }),
-        //         })
-        //         : null;
+        const invoice =
+            payment.status === "approved"
+                ? await this._invoiceFacade.create({
+                    name: client.name,
+                    document: client.document,
+                    street: client.street,
+                    complement: client.complement,
+                    number: client.number,
+                    city: client.city,
+                    state: client.state,
+                    zipCode: client.zipCode,
+                    items: products.map((p) => {
+                        return {
+                            id: p.id.id,
+                            name: p.name,
+                            price: p.salesPrice,
+                        };
+                    }),
+                })
+                : null;
 
-        // payment.status === "approved" && order.approved();
-        // await this._repository.addOrder(order);
+        payment.status === "approved" && order.approved();
+        await this._repository.addOrder(order);
 
-        // return {
-        //     id: order.id.id,
-        //     invoiceId: payment.status === "approved" ? invoice.id : null,
-        //     status: order.status,
-        //     total: order.total,
-        //     products: order.products.map((p) => {
-        //         return {
-        //             productId: p.id.id,
-        //         };
-        //     }),
-        // };
+        return {
+            id: order.id.id,
+            invoiceId: payment.status === "approved" ? invoice.id : null,
+            status: order.status,
+            total: order.total,
+            products: order.products.map((p) => {
+                return {
+                    productId: p.id.id,
+                };
+            }),
+        };
     }
 
     private async validateProducts(input: PlaceOrderInputDto): Promise<void> {
         if (input.products.length === 0) {
             throw new Error("No products selected");
         }
-
-        const product = await this._productFacade.checkStock({
-            productId: input.products[0].productId,
-        });
-        console.log(product.stock <= 0)
 
         for (const p of input.products) {
             const product = await this._productFacade.checkStock({

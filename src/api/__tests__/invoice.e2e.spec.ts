@@ -1,9 +1,12 @@
 import { app, sequelize } from "../express";
 import request from "supertest";
-import Id from "../../modules/@shared/domain/value-object/id.value-object";
+import InvoiceModel from "../../modules/invoice/repository/invoice.model";
 
 describe("E2E test for invoice", () => {
     beforeEach(async () => {
+        await sequelize.addModels([
+            InvoiceModel,
+        ]);
         await sequelize.sync({ force: true });
     });
 
