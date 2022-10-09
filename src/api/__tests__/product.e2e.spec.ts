@@ -1,12 +1,8 @@
 import { app, sequelize } from "../express";
 import request from "supertest";
-import { ProductModel } from "../../modules/product-adm/repository/product.model";
 
 describe("E2E test for product", () => {
     beforeEach(async () => {
-        await sequelize.addModels([
-            ProductModel,
-        ]);
         await sequelize.sync({ force: true });
     });
 

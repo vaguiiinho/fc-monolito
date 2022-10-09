@@ -1,17 +1,12 @@
 import { app, sequelize } from "../express";
 import request from "supertest";
 import ClientAdmFacadeFactory from "../../modules/client-adm/factory/facade.factory";
-import { ClientModel } from "../../modules/client-adm/repository/client.model";
 import ProductAdmFacadeFactory from "../../modules/product-adm/factory/facade.factory";
-import { ProductModel } from "../../modules/product-adm/repository/product.model";
+
 
 describe("E2E test for checkout", () => {
     beforeEach(async () => {
-        await sequelize.addModels([
-            ClientModel,
-            ProductModel
-        ]);
-        await sequelize.sync({ force: true });
+        await sequelize.sync();
     });
 
     afterAll(async () => {
