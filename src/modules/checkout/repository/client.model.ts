@@ -2,11 +2,12 @@ import { Table, Model, PrimaryKey, Column, HasMany } from "sequelize-typescript"
 import OrderModel from "./order.model";
 
 @Table({
-    tableName: "clients",
+    modelName: "order-client",
+    tableName: "order-clients",
     timestamps: false,
 })
 
-export default class ClientModel extends Model {
+export class ClientModel extends Model {
     @PrimaryKey
     @Column({ allowNull: false })
     id: string;

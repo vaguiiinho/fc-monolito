@@ -2,7 +2,8 @@ import { Table, Model, PrimaryKey, Column, ForeignKey, BelongsTo } from "sequeli
 import OrderModel from "./order.model";
 
 @Table({
-    tableName: "products",
+    modelName: "order-product",
+    tableName: "order-products",
     timestamps: false,
 })
 
